@@ -1,0 +1,82 @@
+# Core NLP and ML Libraries
+spacy==3.7.2
+transformers==4.34.0
+# torch and tensorflow removed from default image to reduce build size and
+# dependency conflicts. Install them in a separate GPU-enabled environment if
+# needed for training.
+scikit-learn==1.3.0
+numpy==1.24.3
+pandas==2.1.1
+
+# Advanced NLP Libraries (heavy packages removed; install separately for training)
+nltk==3.8.1
+textblob==0.17.1
+gensim==4.3.2
+
+# Language Detection and Processing
+langdetect==1.0.9
+
+# Named Entity Recognition
+# stanza and allennlp removed due to heavy torch/version conflicts
+
+# Text Preprocessing and Utilities
+regex==2023.8.8
+unidecode==1.3.7
+ftfy==6.1.1
+beautifulsoup4==4.12.2
+lxml==4.9.3
+
+# Sentiment Analysis
+vaderSentiment==3.3.2
+textstat==0.7.3
+
+# Topic Modeling and Clustering
+# umap-learn and hdbscan removed (heavy C-extension and numba/llvmlite deps)
+
+# Web Framework and API
+fastapi==0.104.1
+uvicorn==0.24.0
+python-multipart==0.0.6
+pydantic==2.4.2
+
+# Data Processing and Storage
+aiofiles==23.2.1
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+
+# Monitoring and Logging
+prometheus-client==0.18.0
+structlog==23.1.0
+
+# Development and Testing
+pytest==7.4.2
+pytest-asyncio==0.21.1
+httpx==0.25.0
+
+# Visualization and Analysis
+matplotlib==3.7.2
+seaborn==0.12.2
+wordcloud==1.9.2
+plotly==5.17.0
+
+# Document Processing
+pypdf2==3.0.1
+python-docx==0.8.11
+openpyxl==3.1.2
+
+# Caching and Performance
+redis==5.0.1
+python-memcached==1.59
+
+# Configuration Management
+python-dotenv==1.0.0
+pyyaml==6.0.1
+
+# Model Serving and Deployment
+onnx==1.14.1
+onnxruntime==1.16.1
+
+# Additional Utilities
+tqdm==4.66.1
+requests==2.31.0
+aiohttp==3.8.6

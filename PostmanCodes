@@ -1,0 +1,232 @@
+Absolutely! You can test all the API endpoints using Postman. Let me show you the available endpoints and how to test them. 
+
+Checked background terminal output
+
+Perfect! Your server is running and ready for Postman testing. Let me show you all the available API endpoints and how to test them in Postman.
+
+## 🚀 SmartDockAI API Endpoints for Postman Testing
+
+**Base URL**: `http://localhost:3000`
+
+### 1. **Health Check (GET)**
+```
+GET http://localhost:3000/health
+```
+- **Headers**: None required
+- **Body**: None
+- **Expected Response**: Status info with database health
+
+### 2. **API Overview (GET)**
+```
+GET http://localhost:3000/api
+```
+- **Headers**: None required
+- **Body**: None
+- **Expected Response**: API documentation with all available endpoints
+
+### 3. **Authentication Endpoints**
+
+#### Register User (POST)
+```
+POST http://localhost:3000/api/auth/register
+```
+- **Headers**: `Content-Type: application/json`
+- **Body** (JSON):
+```json
+{
+  "username": "testuser",
+  "email": "test@example.com",
+  "password": "password123",
+  "firstName": "Test",
+  "lastName": "User"
+}
+```
+
+#### Login User (POST)
+```
+POST http://localhost:3000/api/auth/login
+```
+- **Headers**: `Content-Type: application/json`
+- **Body** (JSON):
+```json
+{
+  "email": "test@example.com",
+  "password": "password123"
+}
+```
+- **Response**: Returns JWT token for authenticated requests
+
+#### Get Current User (GET)
+```
+GET http://localhost:3000/api/auth/me
+```
+- **Headers**: 
+  - `Content-Type: application/json`
+  - `Authorization: Bearer YOUR_JWT_TOKEN`
+
+### 4. **Document Management Endpoints**
+
+#### Upload Document (POST)
+```
+POST http://localhost:3000/api/documents/upload
+```
+- **Headers**: `Authorization: Bearer YOUR_JWT_TOKEN`
+- **Body**: Form-data with `file` field containing your document
+- **Expected Response**: Document metadata and OCR job ID
+
+#### Get All Documents (GET)
+```
+GET http://localhost:3000/api/documents
+```
+- **Headers**: `Authorization: Bearer YOUR_JWT_TOKEN`
+- **Query Parameters** (optional):
+  - `page=1`
+  - `limit=10`
+  - `status=processed`
+
+#### Get Document by ID (GET)
+```
+GET http://localhost:3000/api/documents/{documentId}
+```
+- **Headers**: `Authorization: Bearer YOUR_JWT_TOKEN`
+
+#### Download Document (GET)
+```
+GET http://localhost:3000/api/documents/{documentId}/download
+```
+- **Headers**: `Authorization: Bearer YOUR_JWT_TOKEN`
+
+#### Delete Document (DELETE)
+```
+DELETE http://localhost:3000/api/documents/{documentId}
+```
+- **Headers**: `Authorization: Bearer YOUR_JWT_TOKEN`
+
+### 5. **OCR Processing Endpoints**
+
+#### Get OCR Job Status (GET)
+```
+GET http://localhost:3000/api/ocr/jobs/{jobId}/status
+```
+- **Headers**: `Authorization: Bearer YOUR_JWT_TOKEN`
+
+#### Process Document OCR (POST)
+```
+POST http://localhost:3000/api/ocr/documents/{documentId}/process
+```
+- **Headers**: 
+  - `Content-Type: application/json`
+  - `Authorization: Bearer YOUR_JWT_TOKEN`
+- **Body** (JSON):
+```json
+{
+  "language": "eng",
+  "priority": 10,
+  "documentType": "general"
+}
+```
+
+### 6. **Search Endpoints**
+
+#### Search Documents (POST)
+```
+POST http://localhost:3000/api/search
+```
+- **Headers**: 
+  - `Content-Type: application/json`
+  - `Authorization: Bearer YOUR_JWT_TOKEN`
+- **Body** (JSON):
+```json
+{
+  "query": "your search term",
+  "filters": {
+    "type": "pdf",
+    "dateRange": {
+      "start": "2024-01-01",
+      "end": "2024-12-31"
+    }
+  }
+}
+```
+
+#### Advanced Search (POST)
+```
+POST http://localhost:3000/api/search/advanced
+```
+- **Headers**: 
+  - `Content-Type: application/json`
+  - `Authorization: Bearer YOUR_JWT_TOKEN`
+- **Body** (JSON):
+```json
+{
+  "query": "search term",
+  "searchType": "fulltext",
+  "sortBy": "relevance",
+  "limit": 20
+}
+```
+
+### 7. **Admin Endpoints** (Requires Admin Role)
+
+#### Get All Users (GET)
+```
+GET http://localhost:3000/api/admin/users
+```
+- **Headers**: `Authorization: Bearer YOUR_ADMIN_JWT_TOKEN`
+
+#### Create User (POST)
+```
+POST http://localhost:3000/api/admin/users
+```
+- **Headers**: 
+  - `Content-Type: application/json`
+  - `Authorization: Bearer YOUR_ADMIN_JWT_TOKEN`
+- **Body** (JSON):
+```json
+{
+  "username": "newuser",
+  "email": "newuser@example.com",
+  "password": "password123",
+  "firstName": "New",
+  "lastName": "User",
+  "roleId": 2
+}
+```
+
+#### Get System Stats (GET)
+```
+GET http://localhost:3000/api/admin/stats
+```
+- **Headers**: `Authorization: Bearer YOUR_ADMIN_JWT_TOKEN`
+
+#### Get All Roles (GET)
+```
+GET http://localhost:3000/api/admin/roles
+```
+- **Headers**: `Authorization: Bearer YOUR_ADMIN_JWT_TOKEN`
+
+### 🔐 **Authentication Flow for Testing:**
+
+1. **First, register a user** with the `/api/auth/register` endpoint
+2. **Login** with `/api/auth/login` to get your JWT token
+3. **Copy the token** from the login response
+4. **Use the token** in the `Authorization` header as `Bearer YOUR_TOKEN` for protected endpoints
+
+### 📋 **Quick Test Sequence:**
+
+1. **Test Health**: `GET /health`
+2. **Register**: `POST /api/auth/register`
+3. **Login**: `POST /api/auth/login`
+4. **Get Profile**: `GET /api/auth/me` (with token)
+5. **Upload Document**: `POST /api/documents/upload` (with token + file)
+6. **List Documents**: `GET /api/documents` (with token)
+7. **Search**: `POST /api/search` (with token)
+
+### 💡 **Postman Tips:**
+
+- Set up environment variables for `baseUrl` and `authToken`
+- Use the "Tests" tab to automatically extract JWT tokens from login responses
+- Create a collection with pre-request scripts to handle authentication
+- Use form-data for file uploads, JSON for other requests
+
+The server is running and ready for your Postman tests! Start with the health check and then test the authentication flow.

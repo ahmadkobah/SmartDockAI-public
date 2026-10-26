@@ -1,0 +1,53 @@
+# Deep Learning and AI (heavy, moved to requirements.heavy.txt)
+# tensorflow==2.13.0
+# torch==2.0.1
+# torchvision==0.15.2
+# transformers==4.34.0
+# opencv-python==4.8.1.78
+# scikit-image==0.21.0
+# scikit-learn==1.3.0
+# numpy==1.24.3
+# pandas==2.1.1
+
+# Image Processing
+Pillow==10.0.1
+albumentations==1.3.1
+imgaug==0.4.0
+
+# Web Framework
+fastapi==0.104.1
+uvicorn==0.24.0
+python-multipart==0.0.6
+pydantic==2.4.2
+
+# Database and Storage
+redis==5.0.1
+boto3==1.29.7
+
+# Handwriting Recognition Specific (heavy, moved to requirements.heavy.txt)
+# easyocr==1.7.0
+# paddlepaddle==2.5.1
+# paddleocr==2.7.0.3
+
+# Training and Evaluation
+matplotlib==3.8.0
+seaborn==0.12.2
+wandb==0.15.12
+tensorboard==2.14.0
+
+# Utilities
+python-dotenv==1.0.0
+loguru==0.7.2
+requests==2.31.0
+tqdm==4.66.1
+click==8.1.7
+
+# Development
+pytest==7.4.2
+black==23.9.1
+flake8==6.1.0
+mypy==1.6.0
+jupyter==1.0.0
+
+# Character Segmentation
+pytesseract==0.3.10

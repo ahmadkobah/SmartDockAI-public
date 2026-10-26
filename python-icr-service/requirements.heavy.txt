@@ -1,0 +1,14 @@
+# Heavy / training requirements for ICR service
+# Use this file to build a dedicated training image with GPU/CPU-specific wheels
+tensorflow==2.13.0
+torch==2.0.1
+torchvision==0.15.2
+transformers==4.34.0
+opencv-python<=4.6.0
+scikit-image==0.21.0
+scikit-learn==1.3.0
+numpy==1.24.3
+pandas==2.1.1
+paddlepaddle==2.6.2
+paddleocr==2.7.0.3
+easyocr==1.7.0

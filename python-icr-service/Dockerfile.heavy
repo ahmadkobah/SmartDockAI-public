@@ -1,0 +1,37 @@
+# Heavy (training) image for python-icr-service (CPU-only)
+FROM python:3.10-slim
+
+WORKDIR /app
+
+# Install system deps for building wheels and libraries
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    gcc \
+    g++ \
+    wget \
+    curl \
+    libgl1 \
+    libglib2.0-0 \
+    libsm6 \
+    libxext6 \
+    libxrender1 \
+    libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy heavy requirements
+COPY requirements.heavy.txt .
+
+# Install pip build tools and heavy requirements (CPU-only)
+RUN pip install --upgrade pip setuptools wheel && \
+    pip install numpy==1.24.3 && \
+    pip install --no-cache-dir -r requirements.heavy.txt
+
+# Copy application code
+COPY . .
+
+# Create runtime dirs
+RUN mkdir -p models training_data logs
+
+EXPOSE 8001
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8001"]

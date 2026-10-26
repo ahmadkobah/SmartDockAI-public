@@ -1,0 +1,13 @@
+Invoice #INV-2024-001
+
+Date: March 15, 2024
+From: SmartDock Corporation
+To: Client ABC Ltd
+
+Services Rendered:
+- Document Processing: $2,500
+- OCR Analysis: $1,200
+- Total Amount: $3,700
+
+Payment Terms: Net 30 days
+Due Date: April 14, 2024

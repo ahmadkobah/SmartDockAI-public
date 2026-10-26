@@ -1,0 +1,44 @@
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+pydantic==2.5.0
+httpx==0.25.2
+aiofiles==23.2.1
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+scikit-learn==1.3.2
+numpy==1.24.3
+pandas==2.1.4
+nltk==3.8.1
+spacy==3.7.2
+transformers==4.36.2
+torch==2.1.1
+sentence-transformers==2.2.2
+fuzzywuzzy==0.18.0
+python-Levenshtein==0.23.0
+regex==2023.10.3
+beautifulsoup4==4.12.2
+lxml==4.9.3
+python-dateutil==2.8.2
+pytz==2023.3
+textdistance==4.6.0
+jellyfish==0.11.2
+rapidfuzz==3.5.2
+python-magic==0.4.27
+filetype==1.2.0
+chardet==5.2.0
+cryptography>=3.4,<46
+requests==2.31.0
+aioredis==2.0.1
+celery==5.3.4
+redis==5.0.1
+psycopg2-binary==2.9.9
+SQLAlchemy==2.0.23
+alembic==1.13.1
+mlflow==2.8.1
+joblib==1.3.2
+email-validator==2.1.0.post1
+## Removed pickle5, dill, cloudpickle and heavyweight ML packages (tensorflow, keras,
+## xgboost, lightgbm, catboost). These should be installed in an external training
+## environment or a GPU-enabled image as needed.
+phonenumbers==8.13.15

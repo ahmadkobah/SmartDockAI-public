@@ -1,0 +1,309 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: smartdock_postgres
+    environment:
+      POSTGRES_DB: smartdock_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U smartdock_user -d smartdock_db"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # MinIO Object Storage
+  minio:
+    image: minio/minio:latest
+    container_name: smartdock_minio
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    ports:
+      - "9000:9000"  # API port
+      - "9001:9001"  # Console port
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    restart: unless-stopped
+
+  # Redis for session storage and caching
+  redis:
+    image: redis:7-alpine
+    container_name: smartdock_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    restart: unless-stopped
+
+  # SmartDockAI Application
+  app:
+    build:
+      context: .
+      target: development
+    container_name: smartdock_app
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: smartdock_db
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: 9000
+      MINIO_ACCESS_KEY: ${MINIO_ROOT_USER}
+      MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
+      MINIO_BUCKET: documents
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: 24h
+      # Python OCR Service
+      PYTHON_OCR_URL: http://python-ocr:8000
+      # Python ICR Service  
+      PYTHON_ICR_URL: http://python-icr:8001
+      # Python NLP Service
+      PYTHON_NLP_URL: http://python-nlp:8002
+      # Python Document Intelligence Service
+      PYTHON_INTELLIGENCE_URL: http://python-document-intelligence:8004
+      OCR_TRAINING_MODE: "true"
+    volumes:
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # Background worker to process OCR and queue jobs
+  worker:
+    build:
+      context: .
+      target: development
+    container_name: smartdock_worker
+    command: node src/worker.js
+    environment:
+      NODE_ENV: development
+      # Database
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: smartdock_db
+      DB_USER: ${POSTGRES_USER}
+      DB_PASSWORD: ${POSTGRES_PASSWORD}
+      # Redis
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      # MinIO Storage
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: 9000
+      MINIO_ACCESS_KEY: ${MINIO_ROOT_USER}
+      MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
+      MINIO_BUCKET: documents
+      # Python OCR Service
+      PYTHON_OCR_URL: http://python-ocr:8000
+      # Python ICR Service  
+      PYTHON_ICR_URL: http://python-icr:8001
+      # Python NLP Service
+      PYTHON_NLP_URL: http://python-nlp:8002
+      # Python Document Intelligence Service
+      PYTHON_INTELLIGENCE_URL: http://python-document-intelligence:8004
+      OCR_TRAINING_MODE: "true"
+    volumes:
+      - ./logs:/app/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      python-ocr:
+        condition: service_healthy
+      python-icr:
+        condition: service_healthy
+      python-nlp:
+        condition: service_healthy
+      python-document-intelligence:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Python OCR Microservice with Training Capabilities
+  python-ocr:
+    build:
+      context: ./python-ocr-service
+    container_name: smartdock_python_ocr
+    ports:
+      - "8000:8000"
+    environment:
+      PYTHONPATH: /app
+      LOG_LEVEL: INFO
+    volumes:
+      - ./python-ocr-service/training_data:/app/training_data
+      - ./python-ocr-service/models:/app/models
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # Python ICR Microservice for Handwriting Recognition
+  python-icr:
+    build:
+      context: ./python-icr-service
+    container_name: smartdock_python_icr
+    ports:
+      - "8001:8001"
+    environment:
+      PYTHONPATH: /app
+      LOG_LEVEL: INFO
+      ICR_MODEL_PATH: /app/models
+      TRAINING_DATA_PATH: /app/training_data
+      MAX_IMAGE_SIZE: 2048
+    volumes:
+      - ./python-icr-service/training_data:/app/training_data
+      - ./python-icr-service/models:/app/models
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # Python NLP Microservice for Natural Language Processing
+  python-nlp:
+    build:
+      context: ./python-nlp-service
+    container_name: smartdock_python_nlp
+    ports:
+      - "8002:8002"
+    environment:
+      PYTHONPATH: /app
+      LOG_LEVEL: INFO
+      NLP_MODEL_PATH: /app/models
+      TRAINING_DATA_PATH: /app/training_data
+      MAX_TEXT_LENGTH: 10000
+      CACHE_ENABLED: "true"
+      # Model configurations
+      SENTIMENT_MODEL: cardiffnlp/twitter-roberta-base-sentiment-latest
+      NER_MODEL: dbmdz/bert-large-cased-finetuned-conll03-english
+      SUMMARIZATION_MODEL: facebook/bart-large-cnn
+      SENTENCE_MODEL: all-MiniLM-L6-v2
+    volumes:
+      - ./python-nlp-service/training_data:/app/training_data
+      - ./python-nlp-service/models:/app/models
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # Python Document Intelligence Microservice for Advanced Document Understanding
+  python-document-intelligence:
+    build:
+      context: ./python-document-intelligence-service
+    container_name: smartdock_python_intelligence
+    ports:
+      - "8004:8004"
+    environment:
+      PYTHONPATH: /app
+      LOG_LEVEL: INFO
+      INTELLIGENCE_SERVICE_HOST: 0.0.0.0
+      INTELLIGENCE_SERVICE_PORT: 8004
+      # Service URLs for integration
+      OCR_SERVICE_URL: http://python-ocr:8000
+      ICR_SERVICE_URL: http://python-icr:8001
+      NLP_SERVICE_URL: http://python-nlp:8002
+      # Model configurations
+      CLASSIFICATION_MODEL_PATH: /app/models/classification
+      EXTRACTION_MODEL_PATH: /app/models/extraction
+      TEMPLATE_MODEL_PATH: /app/models/templates
+      VALIDATION_MODEL_PATH: /app/models/validation
+      ROUTING_MODEL_PATH: /app/models/routing
+      # Processing configurations
+      MAX_FILE_SIZE: 52428800  # 50MB
+      SUPPORTED_FORMATS: "pdf,png,jpg,jpeg,tiff,bmp,gif,txt,doc,docx"
+      CONFIDENCE_THRESHOLD: 0.8
+      BATCH_SIZE: 10
+      CACHE_ENABLED: "true"
+    volumes:
+      - ./python-document-intelligence-service/app:/app/app
+      - ./python-document-intelligence-service/trained_models:/app/trained_models
+      - ./python-document-intelligence-service/training_data:/app/training_data
+    depends_on:
+      python-ocr:
+        condition: service_healthy
+      python-icr:
+        condition: service_healthy
+      python-nlp:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8004/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+  # Development hot-reload version (uncomment for dev)
+  # app-dev:
+  #   build: .
+  #   container_name: smartdock_app_dev
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     NODE_ENV: development
+  #     # ... same environment variables as app service
+  #   volumes:
+  #     - ./src:/app/src
+  #     - ./config:/app/config
+  #     - ./uploads:/app/uploads
+  #     - ./logs:/app/logs
+  #   depends_on:
+  #     - postgres
+  #     - minio
+  #     - redis
+  #   command: npm run dev
+
+volumes:
+  postgres_data:
+    driver: local
+  minio_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  default:
+    name: smartdock_network

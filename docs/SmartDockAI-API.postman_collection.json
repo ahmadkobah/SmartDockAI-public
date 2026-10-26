@@ -1,0 +1,756 @@
+{
+  "info": {
+    "name": "SmartDockAI API",
+    "description": "Comprehensive API collection for SmartDockAI - Intelligent Document Management System",
+    "version": "1.0.0",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "refreshToken",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.data && response.data.token) {",
+                  "        pm.collectionVariables.set('token', response.data.token);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"testuser\",\n  \"email\": \"test@example.com\",\n  \"password\": \"securePassword123\",\n  \"firstName\": \"Test\",\n  \"lastName\": \"User\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "description": "Register a new user account"
+          }
+        },
+        {
+          "name": "Login User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.data && response.data.token) {",
+                  "        pm.collectionVariables.set('token', response.data.token);",
+                  "    }",
+                  "    if (response.data && response.data.refreshToken) {",
+                  "        pm.collectionVariables.set('refreshToken', response.data.refreshToken);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"securePassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Login with email and password"
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    if (response.data && response.data.token) {",
+                  "        pm.collectionVariables.set('token', response.data.token);",
+                  "    }",
+                  "    if (response.data && response.data.refreshToken) {",
+                  "        pm.collectionVariables.set('refreshToken', response.data.refreshToken);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "refresh"]
+            },
+            "description": "Refresh access token using refresh token"
+          }
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "profile"]
+            },
+            "description": "Get current user profile"
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Updated\",\n  \"lastName\": \"Name\",\n  \"email\": \"updated@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "profile"]
+            },
+            "description": "Update user profile information"
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"securePassword123\",\n  \"newPassword\": \"newSecurePassword456\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/change-password",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "change-password"]
+            },
+            "description": "Change user password"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "logout"]
+            },
+            "description": "Logout user and invalidate token"
+          }
+        }
+      ],
+      "description": "User authentication and account management"
+    },
+    {
+      "name": "Documents",
+      "item": [
+        {
+          "name": "Upload Document",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "document",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "tags",
+                  "value": "[\"invoice\", \"finance\", \"2025\"]",
+                  "type": "text"
+                },
+                {
+                  "key": "metadata",
+                  "value": "{\"department\": \"Finance\", \"project\": \"Q4-2025\"}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/documents/upload",
+              "host": ["{{baseUrl}}"],
+              "path": ["documents", "upload"]
+            },
+            "description": "Upload a single document for processing"
+          }
+        },
+        {
+          "name": "Upload Multiple Documents",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "documents",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "documents",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "tags",
+                  "value": "[\"batch\", \"invoices\"]",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/documents/upload-multiple",
+              "host": ["{{baseUrl}}"],
+              "path": ["documents", "upload-multiple"]
+            },
+            "description": "Upload multiple documents for batch processing"
+          }
+        },
+        {
+          "name": "List Documents",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/documents?page=1&limit=10&status=completed",
+              "host": ["{{baseUrl}}"],
+              "path": ["documents"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "status",
+                  "value": "completed"
+                }
+              ]
+            },
+            "description": "List user documents with pagination and filters"
+          }
+        },
+        {
+          "name": "Get Document Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/documents/:documentId",
+              "host": ["{{baseUrl}}"],
+              "path": ["documents", ":documentId"],
+              "variable": [
+                {
+                  "key": "documentId",
+                  "value": "123"
+                }
+              ]
+            },
+            "description": "Get detailed information about a specific document"
+          }
+        }
+      ],
+      "description": "Document upload and management"
+    },
+    {
+      "name": "OCR Services",
+      "item": [
+        {
+          "name": "Extract Text",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"documentId\": 123,\n  \"language\": \"en\",\n  \"options\": {\n    \"confidence\": true,\n    \"coordinates\": true\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/ocr/extract",
+              "host": ["{{baseUrl}}"],
+              "path": ["ocr", "extract"]
+            },
+            "description": "Extract text from uploaded document using OCR"
+          }
+        },
+        {
+          "name": "Get Supported Languages",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/ocr/languages",
+              "host": ["{{baseUrl}}"],
+              "path": ["ocr", "languages"]
+            },
+            "description": "Get list of supported OCR languages"
+          }
+        },
+        {
+          "name": "Batch OCR Processing",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"documentIds\": [123, 124, 125],\n  \"language\": \"en\",\n  \"priority\": \"high\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/ocr/batch",
+              "host": ["{{baseUrl}}"],
+              "path": ["ocr", "batch"]
+            },
+            "description": "Process multiple documents with OCR in batch"
+          }
+        }
+      ],
+      "description": "Optical Character Recognition services"
+    },
+    {
+      "name": "Document Intelligence",
+      "item": [
+        {
+          "name": "Analyze Document",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"documentId\": 123,\n  \"analysis\": {\n    \"classification\": true,\n    \"extraction\": true,\n    \"validation\": true\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/intelligence/analyze",
+              "host": ["{{baseUrl}}"],
+              "path": ["intelligence", "analyze"]
+            },
+            "description": "Perform comprehensive document intelligence analysis"
+          }
+        },
+        {
+          "name": "Classify Document",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"documentId\": 123,\n  \"confidence_threshold\": 0.8\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/intelligence/classify",
+              "host": ["{{baseUrl}}"],
+              "path": ["intelligence", "classify"]
+            },
+            "description": "Classify document type using AI"
+          }
+        },
+        {
+          "name": "Extract Key Information",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"documentId\": 123,\n  \"extraction_types\": [\"entities\", \"key_value_pairs\", \"tables\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/intelligence/extract",
+              "host": ["{{baseUrl}}"],
+              "path": ["intelligence", "extract"]
+            },
+            "description": "Extract key information and entities from document"
+          }
+        }
+      ],
+      "description": "Advanced document intelligence and analysis"
+    },
+    {
+      "name": "Search",
+      "item": [
+        {
+          "name": "Search Documents",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/search?q=invoice 2025&page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["search"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "invoice 2025"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Search documents using query string"
+          }
+        },
+        {
+          "name": "Advanced Search",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"query\": \"contract agreement\",\n  \"filters\": {\n    \"documentType\": \"contract\",\n    \"dateRange\": {\n      \"start\": \"2025-01-01\",\n      \"end\": \"2025-12-31\"\n    },\n    \"tags\": [\"legal\", \"active\"],\n    \"confidence\": { \"min\": 0.8 }\n  },\n  \"sort\": {\n    \"field\": \"relevance\",\n    \"order\": \"desc\"\n  },\n  \"page\": 1,\n  \"limit\": 10\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/search/advanced",
+              "host": ["{{baseUrl}}"],
+              "path": ["search", "advanced"]
+            },
+            "description": "Advanced search with complex filters"
+          }
+        }
+      ],
+      "description": "Document search and discovery"
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "System Statistics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/statistics",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "statistics"]
+            },
+            "description": "Get comprehensive system statistics"
+          }
+        },
+        {
+          "name": "Service Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/services/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "services", "health"]
+            },
+            "description": "Get health status of all services"
+          }
+        },
+        {
+          "name": "Analytics Dashboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/analytics/dashboard?timeRange=7d",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "analytics", "dashboard"],
+              "query": [
+                {
+                  "key": "timeRange",
+                  "value": "7d"
+                }
+              ]
+            },
+            "description": "Get analytics dashboard data"
+          }
+        },
+        {
+          "name": "List All Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users?page=1&limit=20&search=john&status=active",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "search",
+                  "value": "john"
+                },
+                {
+                  "key": "status",
+                  "value": "active"
+                }
+              ]
+            },
+            "description": "List all users with filtering and pagination"
+          }
+        },
+        {
+          "name": "Performance Metrics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/performance",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "performance"]
+            },
+            "description": "Get system performance metrics"
+          }
+        },
+        {
+          "name": "Update User Roles",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roles\": [\"admin\", \"user\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/:userId/roles",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users", ":userId", "roles"],
+              "variable": [
+                {
+                  "key": "userId",
+                  "value": "123"
+                }
+              ]
+            },
+            "description": "Update user roles and permissions"
+          }
+        }
+      ],
+      "description": "Administrative functions and system management"
+    },
+    {
+      "name": "NLP Services",
+      "item": [
+        {
+          "name": "Extract Entities",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"John Doe works at ACME Corporation in New York and earns $75,000 annually.\",\n  \"entity_types\": [\"PERSON\", \"ORG\", \"GPE\", \"MONEY\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/nlp/entities",
+              "host": ["{{baseUrl}}"],
+              "path": ["nlp", "entities"]
+            },
+            "description": "Extract named entities from text"
+          }
+        },
+        {
+          "name": "Analyze Sentiment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"This is an excellent product and I'm very satisfied with the service.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/nlp/sentiment",
+              "host": ["{{baseUrl}}"],
+              "path": ["nlp", "sentiment"]
+            },
+            "description": "Analyze sentiment of text"
+          }
+        },
+        {
+          "name": "Generate Summary",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Long document text to be summarized...\",\n  \"max_length\": 100,\n  \"min_length\": 50\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/nlp/summarize",
+              "host": ["{{baseUrl}}"],
+              "path": ["nlp", "summarize"]
+            },
+            "description": "Generate summary of document text"
+          }
+        }
+      ],
+      "description": "Natural Language Processing services"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ]
+}
